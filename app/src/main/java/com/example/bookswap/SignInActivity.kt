@@ -3,6 +3,7 @@ package com.example.bookswap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.viewpager2.widget.ViewPager2
+import com.example.bookswap.databinding.ActivitySignInBinding
 import com.google.android.material.tabs.TabLayout
 
 class SignInActivity : AppCompatActivity() {
@@ -10,10 +11,12 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var adapter: FragmentAdapter
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager2: ViewPager2
+    private lateinit var binding: ActivitySignInBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_in)
+        binding = ActivitySignInBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         adapter = FragmentAdapter(supportFragmentManager, lifecycle)
         tabLayout = findViewById<TabLayout>(R.id.tabLayout)

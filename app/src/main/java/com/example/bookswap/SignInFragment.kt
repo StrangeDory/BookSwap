@@ -1,12 +1,19 @@
 package com.example.bookswap
 
 import android.os.Bundle
+import android.util.Log
+import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.viewpager2.widget.ViewPager2
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,6 +29,8 @@ class SignInFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    private var auth: FirebaseAuth = Firebase.auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,6 +56,42 @@ class SignInFragment : Fragment() {
                 viewPager2.currentItem = 1
             }
         }
+
+        view.findViewById<Button>(R.id.signInBtn).setOnClickListener{
+            if(checkAllFields(view)) {
+                val email = view.findViewById<EditText>(R.id.editEmailSignIN).text.toString()
+                val password = view.findViewById<EditText>(R.id.editPassSignIn).text.toString()
+                auth.signInWithEmailAndPassword(email, password).addOnCompleteListener{
+                    if(it.isSuccessful) {
+                        TODO() //enter to the account
+                    } else {
+                        Log.e("error", it.exception.toString())
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkAllFields(view: View): Boolean {
+        val email = view.findViewById<EditText>(R.id.editEmailSignIN)
+        val password = view.findViewById<EditText>(R.id.editPassSignIn)
+        if (email.text.toString().isEmpty()) {
+            email.error = "Email is required!"
+            return false
+        }
+        if(!Patterns.EMAIL_ADDRESS.matcher(email.text.toString()).matches()) {
+            email.error = "Check email format!"
+            return false
+        }
+        if (password.text.toString().isEmpty()) {
+            password.error = "Password is required!"
+            return false
+        }
+        if(password.text.toString().length < 7) {
+            password.error = "Password should be at least 7 characters!"
+            return false
+        }
+        return true
     }
 
     companion object {
