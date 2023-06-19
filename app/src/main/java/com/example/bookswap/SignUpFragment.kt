@@ -1,5 +1,6 @@
 package com.example.bookswap
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -63,7 +64,9 @@ class SignUpFragment : Fragment() {
                 val password = view.findViewById<EditText>(R.id.editPassSignUp).text.toString()
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener{
                     if(it.isSuccessful) {
-                        TODO() //enter to the account
+                        val intent = Intent(activity, UserProfileActivity::class.java)
+                        activity?.startActivity(intent)
+                        activity?.finish()
                     } else {
                         Log.e("error", it.exception.toString())
                     }
@@ -73,8 +76,13 @@ class SignUpFragment : Fragment() {
     }
 
     private fun checkAllFields(view: View): Boolean {
+        val name = view.findViewById<EditText>(R.id.editNameSignUp)
         val email = view.findViewById<EditText>(R.id.editEmailSignUp)
         val password = view.findViewById<EditText>(R.id.editPassSignUp)
+        if (name.text.toString().isEmpty()) {
+            name.error = "User name is required!"
+            return false
+        }
         if (email.text.toString().isEmpty()) {
             email.error = "Email is required!"
             return false

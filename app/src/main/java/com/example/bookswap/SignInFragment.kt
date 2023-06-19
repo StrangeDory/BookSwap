@@ -1,5 +1,6 @@
 package com.example.bookswap
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
@@ -63,12 +64,20 @@ class SignInFragment : Fragment() {
                 val password = view.findViewById<EditText>(R.id.editPassSignIn).text.toString()
                 auth.signInWithEmailAndPassword(email, password).addOnCompleteListener{
                     if(it.isSuccessful) {
-                        TODO() //enter to the account
+                        val intent = Intent(activity, UserProfileActivity::class.java)
+                        activity?.startActivity(intent)
+                        activity?.finish()
                     } else {
                         Log.e("error", it.exception.toString())
                     }
                 }
             }
+        }
+
+        view.findViewById<TextView>(R.id.tvForgotPass).setOnClickListener{
+            val intent = Intent(activity, ForgotPasswordActivity::class.java)
+            activity?.startActivity(intent)
+            activity?.finish()
         }
     }
 
