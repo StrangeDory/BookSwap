@@ -5,4 +5,6 @@
     <string name="sign_in_account">Sign in to your</string>
     <string name="register_text"><u>Register Now</u></string>
     <string name="no_account">No account</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="logout">Logout</string>
 </resources>
