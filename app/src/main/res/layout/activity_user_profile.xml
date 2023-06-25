@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_arrow_back_24"
             android:layout_centerVertical="true"
-            android:background="transparent"
+            android:background="@null"
             android:layout_marginStart="10dp"/>
 
         <TextView
@@ -94,5 +94,54 @@
         android:text="Email"
         android:textSize="14sp"
         android:textColor="@color/black"/>
+
+    <LinearLayout
+        android:id="@+id/layout_number_records"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_border_with_shadow"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_below="@+id/user_email">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/black"
+            android:text="Number of records: "/>
+
+        <TextView
+            android:id="@+id/tv_number_records"
+            android:textColor="@color/black"
+            android:text="0"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ImageButton
+            android:id="@+id/btn_add_record"
+            android:layout_marginEnd="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/ic_baseline_add_24" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layout_number_records"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </ScrollView>
 
 </RelativeLayout>

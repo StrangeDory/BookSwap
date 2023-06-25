@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 // TODO: Rename parameter arguments, choose names that match
@@ -32,6 +33,7 @@ class SignUpFragment : Fragment() {
     private var param2: String? = null
 
     private var auth: FirebaseAuth = Firebase.auth
+    private val databaseReference = Firebase.database.reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +66,11 @@ class SignUpFragment : Fragment() {
                 val password = view.findViewById<EditText>(R.id.editPassSignUp).text.toString()
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener{
                     if(it.isSuccessful) {
+                        val username = view.findViewById<EditText>(R.id.editNameSignUp).text.toString()
+                        // store to Realtime Database
+                        databaseReference.child("users").child(auth.currentUser!!.uid).child("email").setValue(email)
+                        databaseReference.child("users").child(auth.currentUser!!.uid).child("username").setValue(username)
+
                         val intent = Intent(activity, UserProfileActivity::class.java)
                         activity?.startActivity(intent)
                         activity?.finish()

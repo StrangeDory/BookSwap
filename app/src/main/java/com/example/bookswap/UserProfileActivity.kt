@@ -5,20 +5,69 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class UserProfileActivity : AppCompatActivity() {
 
     private var auth: FirebaseAuth = Firebase.auth
+    private val databaseReference = Firebase.database.reference
 
     @SuppressLint("DiscouragedPrivateApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
+
+        databaseReference.child("users").child(auth.currentUser!!.uid).child("username").addValueEventListener(object:
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val value = snapshot.getValue<String>()
+                findViewById<TextView>(R.id.username).text = value
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("error", "Failed to read value.", error.toException())
+            }
+
+        })
+        databaseReference.child("users").child(auth.currentUser!!.uid).child("email").addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val value = snapshot.getValue<String>()
+                findViewById<TextView>(R.id.user_email).text = value
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("error", "Failed to read value.", error.toException())
+            }
+
+        })
+        databaseReference.child("users").child(auth.currentUser!!.uid).child("fullName").addValueEventListener(object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val value = snapshot.getValue<String>()
+                findViewById<TextView>(R.id.user_Fullname).text = value
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("error", "Failed to read value.", error.toException())
+            }
+
+        })
+
+        findViewById<ImageButton>(R.id.backBtn).setOnClickListener{
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
 
         findViewById<ImageView>(R.id.popup).setOnClickListener{
             val popupMenu = PopupMenu(this, it)
@@ -30,6 +79,8 @@ class UserProfileActivity : AppCompatActivity() {
                     }
                     R.id.popup_logout -> {
                         auth.signOut()
+                        val intent = Intent(this, MainActivity::class.java)
+                        startActivity(intent)
                         finish()
                         true
                     }
