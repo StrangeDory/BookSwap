@@ -68,8 +68,20 @@ class SignUpFragment : Fragment() {
                     if(it.isSuccessful) {
                         val username = view.findViewById<EditText>(R.id.editNameSignUp).text.toString()
                         // store to Realtime Database
-                        databaseReference.child("users").child(auth.currentUser!!.uid).child("email").setValue(email)
-                        databaseReference.child("users").child(auth.currentUser!!.uid).child("username").setValue(username)
+                        databaseReference.child("users").child(auth.currentUser!!.uid).child("email").setValue(email).addOnCompleteListener {it1 ->
+                            if(it1.isSuccessful){
+
+                            }else{
+                                Log.e("error", "Faild to write email!")
+                            }
+                        }
+                        databaseReference.child("users").child(auth.currentUser!!.uid).child("username").setValue(username).addOnCompleteListener {it1 ->
+                            if(it1.isSuccessful){
+
+                            }else{
+                                Log.e("error", "Faild to write username!")
+                            }
+                        }
 
                         val intent = Intent(activity, UserProfileActivity::class.java)
                         activity?.startActivity(intent)

@@ -7,4 +7,6 @@
     <string name="no_account">No account</string>
     <string name="edit_profile">Edit profile</string>
     <string name="logout">Logout</string>
+    <string name="get_from_gallery">Get from gallery</string>
+    <string name="take_a_photo">Take a photo</string>
 </resources>

@@ -51,7 +51,7 @@ class UserProfileActivity : AppCompatActivity() {
             }
 
         })
-        databaseReference.child("users").child(auth.currentUser!!.uid).child("fullName").addValueEventListener(object: ValueEventListener {
+        databaseReference.child("users").child(auth.currentUser!!.uid).child("fullname").addValueEventListener(object: ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val value = snapshot.getValue<String>()
                 findViewById<TextView>(R.id.user_Fullname).text = value
@@ -74,7 +74,9 @@ class UserProfileActivity : AppCompatActivity() {
             popupMenu.setOnMenuItemClickListener { item ->
                 when(item.itemId) {
                     R.id.popup_edit -> {
-                        //val intent = Intent()
+                        val intent = Intent(this, EditProfileActivity::class.java)
+                        startActivity(intent)
+                        finish()
                         true
                     }
                     R.id.popup_logout -> {

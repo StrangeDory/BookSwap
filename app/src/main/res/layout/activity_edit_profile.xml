@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|bottom"
-            android:background="@color/teal_200"
+            android:background="#B4B8B8"
             android:src="@drawable/ic_baseline_add_24" />
     </androidx.cardview.widget.CardView>
 
