@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
@@ -15,6 +16,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import com.squareup.picasso.Picasso
 
 class MainActivity : AppCompatActivity() {
 
@@ -37,6 +40,15 @@ class MainActivity : AppCompatActivity() {
                 }
 
             })
+            val storageRef = Firebase.storage.getReferenceFromUrl("gs://bookswap-d5092.appspot.com")
+            val imageRef = storageRef.child("users/" + auth.currentUser!!.uid)
+            imageRef.downloadUrl.addOnSuccessListener { uri ->
+                Picasso.get()
+                    .load(uri)
+                    .into(findViewById<ImageView>(R.id.account_image))
+            }.addOnFailureListener { exception ->
+                Log.e("error", exception.message.toString())
+            }
         }
 
         findViewById<LinearLayout>(R.id.account_image_layout).setOnClickListener {

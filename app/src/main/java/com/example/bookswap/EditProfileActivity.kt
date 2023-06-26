@@ -5,13 +5,11 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.ImageDecoder
-import android.media.MediaPlayer
-import android.media.MediaPlayer.OnCompletionListener
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Patterns
@@ -31,8 +29,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
-import java.io.File
-
 
 class EditProfileActivity : AppCompatActivity() {
 
@@ -60,16 +56,11 @@ class EditProfileActivity : AppCompatActivity() {
             }
 
         })
-
-        val imageURL = "gs://bookswap-d5092.appspot.com/users/" + auth.currentUser!!.uid
-        if(Picasso.get().load(imageURL) != null) {
-            Picasso.get().load(imageURL).into(findViewById<ImageView>(R.id.account_image_edit))
-        }
-        databaseReference.child("users").child(auth.currentUser!!.uid).child("email").addValueEventListener(object:
+        databaseReference.child("users").child(auth.currentUser!!.uid).child("fullname").addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val value = snapshot.getValue<String>()
-                findViewById<TextView>(R.id.email_edit).text = value
+                findViewById<TextView>(R.id.fullname_edit).text = value
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -77,11 +68,21 @@ class EditProfileActivity : AppCompatActivity() {
             }
 
         })
-        databaseReference.child("users").child(auth.currentUser!!.uid).child("fullName").addValueEventListener(object:
+
+        val storageRef = Firebase.storage.getReferenceFromUrl("gs://bookswap-d5092.appspot.com")
+        val imageRef = storageRef.child("users/" + auth.currentUser!!.uid)
+        imageRef.downloadUrl.addOnSuccessListener { uri ->
+            Picasso.get()
+                .load(uri)
+                .into(findViewById<ImageView>(R.id.account_image_edit))
+        }.addOnFailureListener { exception ->
+            Log.e("error", exception.message.toString())
+        }
+        databaseReference.child("users").child(auth.currentUser!!.uid).child("email").addValueEventListener(object:
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val value = snapshot.getValue<String>()
-                findViewById<TextView>(R.id.fullname_edit).text = value
+                findViewById<TextView>(R.id.email_edit).text = value
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -106,9 +107,8 @@ class EditProfileActivity : AppCompatActivity() {
                     R.id.popup_take_photo -> {
                         if(!checkCameraPermission()){
                             requestCameraPermission()
-                        } else {
-                            TODO()
                         }
+                        takePicture()
                         true
                     }
                     else -> false
@@ -135,17 +135,15 @@ class EditProfileActivity : AppCompatActivity() {
                     R.id.popup_gallery -> {
                         if(!checkGalleryPermission()){
                             requestGalleryPermission()
-                        } else {
-                            pickImageFromGallery()
                         }
+                        pickImageFromGallery()
                         true
                     }
                     R.id.popup_take_photo -> {
                         if(!checkCameraPermission()){
                             requestCameraPermission()
-                        } else {
-                            TODO()
                         }
+                        takePicture()
                         true
                     }
                     else -> false
@@ -278,6 +276,20 @@ class EditProfileActivity : AppCompatActivity() {
         startActivityForResult(galleryIntent, 2)
     }
 
+    private fun takePicture() {
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+
+            if (takePictureIntent.resolveActivity(packageManager) != null) {
+                startActivityForResult(takePictureIntent, 4)
+            } else {
+                Log.e("error", "No available camera!")
+            }
+        } else {
+            Log.e("error", "Camera not available!")
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == 2 && resultCode == Activity.RESULT_OK && data != null) {
             imageUri = data.data
@@ -287,6 +299,10 @@ class EditProfileActivity : AppCompatActivity() {
                 else
                     findViewById<ImageView>(R.id.account_image_edit).setImageBitmap(MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri!!))
             }
+        }
+        if(requestCode == 4 && resultCode == Activity.RESULT_OK && data != null) {
+            val images: Bitmap = data.extras?.get("data") as Bitmap
+            findViewById<ImageView>(R.id.account_image_edit).setImageBitmap(images)
         }
 
         super.onActivityResult(requestCode, resultCode, data)

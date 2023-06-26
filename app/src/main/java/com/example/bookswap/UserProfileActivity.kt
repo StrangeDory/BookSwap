@@ -2,6 +2,7 @@ package com.example.bookswap
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import com.squareup.picasso.Picasso
 
 class UserProfileActivity : AppCompatActivity() {
 
@@ -62,6 +65,15 @@ class UserProfileActivity : AppCompatActivity() {
             }
 
         })
+        val storageRef = Firebase.storage.getReferenceFromUrl("gs://bookswap-d5092.appspot.com")
+        val imageRef = storageRef.child("users/" + auth.currentUser!!.uid)
+        imageRef.downloadUrl.addOnSuccessListener { uri ->
+            Picasso.get()
+                .load(uri)
+                .into(findViewById<ImageView>(R.id.account_image))
+        }.addOnFailureListener { exception ->
+            Log.e("error", exception.message.toString())
+        }
 
         findViewById<ImageButton>(R.id.backBtn).setOnClickListener{
             val intent = Intent(this, MainActivity::class.java)
