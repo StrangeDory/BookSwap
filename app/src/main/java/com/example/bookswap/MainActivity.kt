@@ -29,10 +29,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         if (auth.currentUser != null) {
-            databaseReference.child("users").child(auth.currentUser!!.uid).child("username").addValueEventListener(object: ValueEventListener {
+            databaseReference.child("users").child(auth.currentUser!!.uid).child("email").addValueEventListener(object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val value = snapshot.getValue<String>()
-                    findViewById<TextView>(R.id.account_name).text = value
+                    if (value != null) {
+                        findViewById<TextView>(R.id.account_name).text = if(value.length < 11) value else (value.substring(0, 9) + "...")
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {

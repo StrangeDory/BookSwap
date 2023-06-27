@@ -284,9 +284,11 @@ class EditProfileActivity : AppCompatActivity() {
                 startActivityForResult(takePictureIntent, 4)
             } else {
                 Log.e("error", "No available camera!")
+                Toast.makeText(this, "No available camera!", Toast.LENGTH_SHORT).show()
             }
         } else {
             Log.e("error", "Camera not available!")
+            Toast.makeText(this, "Camera not available!", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -1,20 +1,36 @@
 package com.example.bookswap
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.util.Patterns
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginResult
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import java.util.*
+
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,6 +48,10 @@ class SignInFragment : Fragment() {
     private var param2: String? = null
 
     private var auth: FirebaseAuth = Firebase.auth
+    private val databaseReference = Firebase.database.reference
+    private lateinit var client: GoogleSignInClient
+    private val storageRef = Firebase.storage.reference
+    private lateinit var callbackManager: CallbackManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +71,24 @@ class SignInFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        callbackManager = CallbackManager.Factory.create()
+        LoginManager.getInstance().registerCallback(callbackManager,
+            object : FacebookCallback<LoginResult> {
+                override fun onCancel() {
+                    // App code
+                }
+
+                override fun onError(exception: FacebookException) {
+                    // App code
+                }
+
+                override fun onSuccess(result: LoginResult) {
+                    val intent = Intent(activity, ForgotPasswordActivity::class.java)
+                    activity?.startActivity(intent)
+                    activity?.finish()
+                }
+            })
+
         view.findViewById<TextView>(R.id.signUpText).setOnClickListener {
             val viewPager2 = activity?.findViewById<ViewPager2>(R.id.viewPager2)
             if (viewPager2 != null) {
@@ -79,6 +117,80 @@ class SignInFragment : Fragment() {
             activity?.startActivity(intent)
             activity?.finish()
         }
+
+        view.findViewById<ImageView>(R.id.googleLoginBtn).setOnClickListener {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("1093245781995-ft2glisi8dfd2bghqklb87janf6cn06h.apps.googleusercontent.com")
+                .requestEmail()
+                .build()
+            client = GoogleSignIn.getClient(requireActivity(), gso)
+
+            val signInIntent = client.signInIntent
+            startActivityForResult(signInIntent, 1001)
+        }
+
+        view.findViewById<ImageView>(R.id.fbLoginBtn).setOnClickListener{
+            LoginManager.getInstance().logInWithReadPermissions(this, listOf("public_profile"));
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 1001) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try{
+                val account = task.getResult(ApiException::class.java)
+                Log.d("auth", "Firebase auth with google " + account.id)
+                firebaseAuthWithGoogle(account.idToken!!)
+            } catch (e: Exception) {
+                Log.e("error", "Google sign in failed! " + e.message.toString())
+            }
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener {
+                if(it.isSuccessful) {
+                    Log.d("signIn", "Sign in with credential is success")
+                    for (profile in auth.currentUser?.providerData!!) {
+                        val name = profile.displayName
+                        val email = profile.email
+                        val photoUrl: Uri? = profile.photoUrl
+                        databaseReference.child("users").child(auth.currentUser!!.uid).child("email").setValue(email).addOnCompleteListener {it1 ->
+                            if(it1.isSuccessful){
+
+                            }else{
+                                Log.e("error", "Faild to write email!")
+                            }
+                        }
+                        databaseReference.child("users").child(auth.currentUser!!.uid).child("fullname").setValue(name).addOnCompleteListener {it1 ->
+                            if(it1.isSuccessful){
+
+                            }else{
+                                Log.e("error", "Faild to write fullname!")
+                            }
+                        }
+                        if(photoUrl != null)
+                            storageRef.child("users/" + auth.currentUser!!.uid).putFile(photoUrl).addOnSuccessListener { taskSnapshot ->
+                                val downloadUrl = taskSnapshot.storage.downloadUrl
+                                Log.d("photo upload successful", downloadUrl.toString())
+                            }
+                                .addOnFailureListener { exception ->
+                                    Log.e("photo upload failed", exception.message.toString())
+                                }
+                    }
+                    val intent = Intent(activity, UserProfileActivity::class.java)
+                    activity?.startActivity(intent)
+                    activity?.finish()
+                } else {
+                    Log.e("error", "Sign in with credential failed " + it.exception.toString())
+                }
+            }
     }
 
     private fun checkAllFields(view: View): Boolean {

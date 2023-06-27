@@ -9,4 +9,10 @@
     <string name="logout">Logout</string>
     <string name="get_from_gallery">Get from gallery</string>
     <string name="take_a_photo">Take a photo</string>
+
+    <string name="facebook_app_id">1234</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">56789</string>
+
+
 </resources>
