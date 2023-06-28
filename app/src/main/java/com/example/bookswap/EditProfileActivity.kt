@@ -99,7 +99,7 @@ class EditProfileActivity : AppCompatActivity() {
                     R.id.popup_gallery -> {
                         if(!checkGalleryPermission()){
                             requestGalleryPermission()
-                        } else {
+                        } else{
                             pickImageFromGallery()
                         }
                         true
@@ -107,8 +107,9 @@ class EditProfileActivity : AppCompatActivity() {
                     R.id.popup_take_photo -> {
                         if(!checkCameraPermission()){
                             requestCameraPermission()
+                        } else{
+                            takePicture()
                         }
-                        takePicture()
                         true
                     }
                     else -> false
@@ -135,15 +136,17 @@ class EditProfileActivity : AppCompatActivity() {
                     R.id.popup_gallery -> {
                         if(!checkGalleryPermission()){
                             requestGalleryPermission()
+                        } else{
+                            pickImageFromGallery()
                         }
-                        pickImageFromGallery()
                         true
                     }
                     R.id.popup_take_photo -> {
                         if(!checkCameraPermission()){
                             requestCameraPermission()
+                        } else{
+                            takePicture()
                         }
-                        takePicture()
                         true
                     }
                     else -> false
@@ -193,13 +196,15 @@ class EditProfileActivity : AppCompatActivity() {
                     }
                 }
 
-                if(imageUri != null)
-                    storageRef.child("users/" + auth.currentUser!!.uid).putFile(imageUri!!).addOnCompleteListener{
-                        if(it.isSuccessful) {
+                if(imageUri != null) {
+                    storageRef.child("users/" + auth.currentUser!!.uid).delete()
+                    storageRef.child("users/" + auth.currentUser!!.uid).putFile(imageUri!!).addOnCompleteListener {
+                        if (it.isSuccessful) {
 
                         } else {
                             Log.e("error", "Failed to upload image!")
                         }
+                    }
                 }
                 hideProgressBar()
                 val intent = Intent(this, UserProfileActivity::class.java)
@@ -256,7 +261,7 @@ class EditProfileActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun requestCameraPermission() {
-        requestPermissions(arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 100)
+        requestPermissions(arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 110)
     }
 
     private fun checkGalleryPermission(): Boolean {
@@ -269,6 +274,20 @@ class EditProfileActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     private fun requestGalleryPermission() {
         requestPermissions(arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 100)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if(requestCode == 110 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            takePicture()
+        }
+        if(requestCode == 100 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            pickImageFromGallery()
+        }
     }
 
     private fun pickImageFromGallery() {
