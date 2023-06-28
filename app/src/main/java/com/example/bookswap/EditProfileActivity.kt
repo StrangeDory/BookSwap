@@ -3,6 +3,7 @@ package com.example.bookswap
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,15 +11,20 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.util.Patterns
+import android.view.View
 import android.view.Window
+import android.view.WindowManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import com.example.bookswap.utils.WaitingDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -29,13 +35,16 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
+import id.zelory.compressor.Compressor
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EditProfileActivity : AppCompatActivity() {
 
     private var auth: FirebaseAuth = Firebase.auth
     private val databaseReference = Firebase.database.reference
     private val storageRef = Firebase.storage.reference
-    private lateinit var dialog: Dialog
     private var imageUri: Uri? = null
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -170,7 +179,8 @@ class EditProfileActivity : AppCompatActivity() {
         // save data
         findViewById<Button>(R.id.btn_save).setOnClickListener {
             if(checkAllFields()) {
-                showProgressBar()
+                val waitDialog = WaitingDialog(this)
+                waitDialog.startLoading()
                 val username = findViewById<EditText>(R.id.username_edit).text.toString()
                 val fullname = findViewById<EditText>(R.id.fullname_edit).text.toString()
                 val email = findViewById<EditText>(R.id.email_edit).text.toString()
@@ -206,10 +216,17 @@ class EditProfileActivity : AppCompatActivity() {
                         }
                     }
                 }
-                hideProgressBar()
                 val intent = Intent(this, UserProfileActivity::class.java)
-                startActivity(intent)
-                finish()
+                val handler = Handler()
+                handler.postDelayed(object: Runnable{
+                    override fun run() {
+                        waitDialog.hideLoading()
+                        startActivity(intent)
+                        finish()
+                    }
+                }, 3000)
+
+
             }
         }
     }
@@ -239,18 +256,6 @@ class EditProfileActivity : AppCompatActivity() {
             return false
         }
         return true
-    }
-
-    private fun showProgressBar() {
-        dialog = Dialog(this)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_wait)
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
-    }
-
-    private fun hideProgressBar() {
-        dialog.dismiss()
     }
 
     private fun checkCameraPermission(): Boolean {
@@ -311,6 +316,33 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun saveImageToGallery(bitmap: Bitmap) {
+        val fileName =
+            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date()) + ".jpg"
+
+        val resolver = contentResolver
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+        }
+
+        imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+        imageUri?.let {
+            try {
+                val outputStream = resolver.openOutputStream(it)
+                outputStream?.use { stream ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                }
+
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toast.makeText(this, "Ошибка сохранения изображения", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == 2 && resultCode == Activity.RESULT_OK && data != null) {
             imageUri = data.data
@@ -322,6 +354,7 @@ class EditProfileActivity : AppCompatActivity() {
             }
         }
         if(requestCode == 4 && resultCode == Activity.RESULT_OK && data != null) {
+            saveImageToGallery(data.extras?.get("data") as Bitmap)
             val images: Bitmap = data.extras?.get("data") as Bitmap
             findViewById<ImageView>(R.id.account_image_edit).setImageBitmap(images)
         }

@@ -2,6 +2,7 @@ package com.example.bookswap
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
@@ -12,6 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.viewpager2.widget.ViewPager2
+import com.example.bookswap.utils.WaitingDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
@@ -62,6 +64,8 @@ class SignUpFragment : Fragment() {
 
         view.findViewById<Button>(R.id.signUpBtn).setOnClickListener{
             if(checkAllFields(view)) {
+                val waitDialog = WaitingDialog(requireActivity())
+                waitDialog.startLoading()
                 val email = view.findViewById<EditText>(R.id.editEmailSignUp).text.toString()
                 val password = view.findViewById<EditText>(R.id.editPassSignUp).text.toString()
                 auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener{
@@ -84,9 +88,16 @@ class SignUpFragment : Fragment() {
                         }
 
                         val intent = Intent(activity, UserProfileActivity::class.java)
-                        activity?.startActivity(intent)
-                        activity?.finish()
+                        val handler = Handler()
+                        handler.postDelayed(object: Runnable{
+                            override fun run() {
+                                waitDialog.hideLoading()
+                                activity?.startActivity(intent)
+                                activity?.finish()
+                            }
+                        }, 3000)
                     } else {
+                        waitDialog.hideLoading()
                         Log.e("error", it.exception.toString())
                     }
                 }

@@ -3,6 +3,7 @@ package com.example.bookswap
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -14,6 +15,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
+import com.example.bookswap.utils.WaitingDialog
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -98,14 +100,23 @@ class SignInFragment : Fragment() {
 
         view.findViewById<Button>(R.id.signInBtn).setOnClickListener{
             if(checkAllFields(view)) {
+                val waitDialog = WaitingDialog(requireActivity())
+                waitDialog.startLoading()
                 val email = view.findViewById<EditText>(R.id.editEmailSignIN).text.toString()
                 val password = view.findViewById<EditText>(R.id.editPassSignIn).text.toString()
                 auth.signInWithEmailAndPassword(email, password).addOnCompleteListener{
                     if(it.isSuccessful) {
                         val intent = Intent(activity, UserProfileActivity::class.java)
-                        activity?.startActivity(intent)
-                        activity?.finish()
+                        val handler = Handler()
+                        handler.postDelayed(object: Runnable{
+                            override fun run() {
+                                waitDialog.hideLoading()
+                                activity?.startActivity(intent)
+                                activity?.finish()
+                            }
+                        }, 3000)
                     } else {
+                        waitDialog.hideLoading()
                         Log.e("error", it.exception.toString())
                     }
                 }

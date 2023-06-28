@@ -10,8 +10,10 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Please wait..."
+        android:textStyle="bold"
+        android:fontFamily="serif-monospace"
         android:textColor="@color/black"
-        android:textSize="10dp"/>
+        android:textSize="14dp"/>
 
     <com.jpardogo.android.googleprogressbar.library.GoogleProgressBar
         android:id="@+id/google_progress"
