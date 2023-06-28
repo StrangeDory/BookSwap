@@ -81,6 +81,10 @@ class UserProfileActivity : AppCompatActivity() {
             finish()
         }
 
+        findViewById<ImageButton>(R.id.btn_add_record).setOnClickListener {
+
+        }
+
         findViewById<ImageView>(R.id.popup).setOnClickListener{
             val popupMenu = PopupMenu(this, it)
             popupMenu.setOnMenuItemClickListener { item ->
