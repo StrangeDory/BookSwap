@@ -6,7 +6,164 @@
     android:layout_height="match_parent"
     tools:context=".AddBookActivity">
 
+    <RelativeLayout
+        android:id="@+id/toolBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/light_orange">
 
+        <ImageButton
+            android:id="@+id/backBtn_add_book"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            android:layout_centerVertical="true"
+            android:background="@null"
+            android:layout_marginStart="10dp"/>
+
+        <TextView
+            android:id="@+id/toolBarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Add book"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="italic|bold" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolBarLayout">
+
+        <ImageView
+            android:id="@+id/img_book"
+            android:layout_width="150dp"
+            android:layout_height="180dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginBottom="30dp"
+            android:src="@drawable/book_bookmark_icon" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_add_icon_book"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/img_book"
+            android:layout_alignBottom="@+id/img_book"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            app:cardCornerRadius="20dp">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|bottom"
+                android:background="#B4B8B8"
+                android:src="@drawable/ic_baseline_add_24" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tv_book_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Book name:"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_toRightOf="@+id/img_book"
+            android:layout_marginTop="30dp"/>
+
+        <EditText
+            android:id="@+id/book_name"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/img_book"
+            android:layout_marginEnd="14dp"
+            android:backgroundTint="@color/orange"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/black"
+            android:layout_below="@+id/tv_book_name" />
+
+        <TextView
+            android:id="@+id/tv_book_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Book author:"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_toRightOf="@+id/img_book"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/book_name"/>
+
+        <EditText
+            android:id="@+id/book_author"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/img_book"
+            android:layout_marginEnd="14dp"
+            android:backgroundTint="@color/orange"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/black"
+            android:layout_below="@+id/tv_book_author" />
+
+        <TextView
+            android:id="@+id/tv_book_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Book description:"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:layout_marginStart="30dp"
+            android:textStyle="bold"
+            android:layout_below="@+id/img_book"/>
+
+        <EditText
+            android:id="@+id/book_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="14dp"
+            android:layout_marginStart="30dp"
+            android:backgroundTint="@color/orange"
+            android:inputType="text|textMultiLine"
+            android:ems="10"
+            android:textColor="@color/black"
+            android:layout_below="@+id/tv_book_description" />
+
+        <TextView
+            android:id="@+id/tv_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comment:"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="80dp"
+            android:textStyle="bold"
+            android:layout_below="@+id/book_description"/>
+
+        <EditText
+            android:id="@+id/comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="14dp"
+            android:layout_marginStart="30dp"
+            android:inputType="text|textMultiLine"
+            android:backgroundTint="@color/orange"
+            android:ems="10"
+            android:textColor="@color/black"
+            android:layout_below="@+id/tv_comment" />
+
+    </RelativeLayout>
 
     <Button
         android:id="@+id/btn_add"

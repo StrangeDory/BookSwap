@@ -35,7 +35,6 @@ import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
-import id.zelory.compressor.Compressor
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*

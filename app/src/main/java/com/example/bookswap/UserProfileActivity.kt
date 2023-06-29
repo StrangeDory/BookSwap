@@ -82,7 +82,9 @@ class UserProfileActivity : AppCompatActivity() {
         }
 
         findViewById<ImageButton>(R.id.btn_add_record).setOnClickListener {
-
+            val intent = Intent(this, AddBookActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
         findViewById<ImageView>(R.id.popup).setOnClickListener{
