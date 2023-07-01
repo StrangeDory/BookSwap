@@ -19,6 +19,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import com.example.bookswap.utils.Book
 import com.example.bookswap.utils.WaitingDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -71,32 +72,12 @@ class AddBookActivity : AppCompatActivity() {
                 val bookDescription = findViewById<EditText>(R.id.book_description).text.toString()
                 val comment = findViewById<EditText>(R.id.comment).text.toString()
                 val bookDB = databaseReference.child("books").child(auth.currentUser!!.uid)
-                bookDB.child(countBooksPerUser.toString()).child("name").setValue(bookName).addOnCompleteListener {
+                val book = Book(bookName, bookAuthor, bookDescription, comment)
+                bookDB.child(countBooksPerUser.toString()).setValue(book).addOnCompleteListener {
                     if(it.isSuccessful){
 
                     }else{
                         Log.e("error", "Failed to write book name!")
-                    }
-                }
-                bookDB.child(countBooksPerUser.toString()).child("author").setValue(bookAuthor).addOnCompleteListener {
-                    if(it.isSuccessful){
-
-                    }else{
-                        Log.e("error", "Failed to write book author!")
-                    }
-                }
-                bookDB.child(countBooksPerUser.toString()).child("description").setValue(bookDescription).addOnCompleteListener {
-                    if(it.isSuccessful){
-
-                    }else{
-                        Log.e("error", "Failed to write book description!")
-                    }
-                }
-                bookDB.child(countBooksPerUser.toString()).child("comment").setValue(comment).addOnCompleteListener {
-                    if(it.isSuccessful){
-
-                    }else{
-                        Log.e("error", "Failed to write book comment!")
                     }
                 }
                 if(imageUri != null) {

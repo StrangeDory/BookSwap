@@ -2,14 +2,22 @@ package com.example.bookswap
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.bookswap.utils.Book
+import com.example.bookswap.utils.BooksProfileViewHolder
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.firebase.ui.database.SnapshotParser
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -21,15 +29,37 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.squareup.picasso.Picasso
 
+
 class UserProfileActivity : AppCompatActivity() {
 
     private var auth: FirebaseAuth = Firebase.auth
     private val databaseReference = Firebase.database.reference
+    private val storageRef = Firebase.storage.reference
+    private lateinit var recycleView: RecyclerView
+    private lateinit var layoutManager:LinearLayoutManager
+    private lateinit var firebaseRecyclerAdapter: FirebaseRecyclerAdapter<Book, BooksProfileViewHolder>
 
-    @SuppressLint("DiscouragedPrivateApi")
+    @SuppressLint("DiscouragedPrivateApi", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_profile)
+
+        recycleView = findViewById(R.id.rv_books_in_profile)
+        layoutManager = LinearLayoutManager(this)
+        recycleView.layoutManager = layoutManager
+        recycleView.setHasFixedSize(true)
+        logRecycleView()
+
+        databaseReference.child("books").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                findViewById<TextView>(R.id.tv_number_records).text = dataSnapshot.childrenCount.toString()
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("error", databaseError.message.toString())
+            }
+        })
 
         databaseReference.child("users").child(auth.currentUser!!.uid).child("username").addValueEventListener(object:
             ValueEventListener {
@@ -121,5 +151,52 @@ class UserProfileActivity : AppCompatActivity() {
                 popupMenu.show()
             }
         }
+    }
+
+    private fun logRecycleView() {
+        val options: FirebaseRecyclerOptions<Book> = FirebaseRecyclerOptions.Builder<Book>()
+            .setQuery(databaseReference.child("books").child(auth.currentUser!!.uid), SnapshotParser<Book> { snapshot ->
+                Book(
+                    snapshot.child("name").value.toString(),
+                    snapshot.child("author").value.toString(),
+                    snapshot.child("description").value.toString(),
+                    snapshot.child("comment").value.toString()
+                )
+            })
+            .build()
+        firebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Book, BooksProfileViewHolder> (options) {
+            override fun onCreateViewHolder(
+                parent: ViewGroup,
+                viewType: Int
+            ): BooksProfileViewHolder {
+                val view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.recycle_view_item_books_in_profile, parent, false)
+                return BooksProfileViewHolder(view)
+            }
+
+            override fun onBindViewHolder(
+                holder: BooksProfileViewHolder,
+                position: Int,
+                model: Book
+            ) {
+                holder.setBookName(model.name)
+                holder.setBookAuthor(model.author)
+                holder.setBookDescription(model.description)
+                holder.setComment(model.comment)
+            }
+
+        }
+
+        recycleView.adapter = firebaseRecyclerAdapter
+    }
+
+    override fun onStart() {
+        super.onStart()
+        firebaseRecyclerAdapter.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        firebaseRecyclerAdapter.startListening()
     }
 }

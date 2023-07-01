@@ -131,17 +131,14 @@
 
     </LinearLayout>
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/layout_number_records"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="10dp">
-
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_books_in_profile"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:layout_below="@+id/layout_number_records"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="10dp"/>
 
-    </ScrollView>
 
 </RelativeLayout>
