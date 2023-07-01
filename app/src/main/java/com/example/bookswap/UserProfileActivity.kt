@@ -160,8 +160,10 @@ class UserProfileActivity : AppCompatActivity() {
                     snapshot.child("name").value.toString(),
                     snapshot.child("author").value.toString(),
                     snapshot.child("description").value.toString(),
-                    snapshot.child("comment").value.toString()
+                    snapshot.child("comment").value.toString(),
+                    snapshot.key.toString()
                 )
+
             })
             .build()
         firebaseRecyclerAdapter = object : FirebaseRecyclerAdapter<Book, BooksProfileViewHolder> (options) {
@@ -183,6 +185,13 @@ class UserProfileActivity : AppCompatActivity() {
                 holder.setBookAuthor(model.author)
                 holder.setBookDescription(model.description)
                 holder.setComment(model.comment)
+                val storageRef = Firebase.storage.getReferenceFromUrl("gs://bookswap-d5092.appspot.com")
+                val imageRef = storageRef.child("books/" + auth.currentUser!!.uid + "/" + model.id)
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    holder.setImgBook(uri)
+                }.addOnFailureListener { exception ->
+                    Log.e("error", exception.message.toString())
+                }
             }
 
         }
