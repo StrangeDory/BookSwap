@@ -39,7 +39,7 @@ class AddBookActivity : AppCompatActivity() {
     private var auth: FirebaseAuth = Firebase.auth
     private val databaseReference = Firebase.database.reference
     private val storageRef = Firebase.storage.reference
-    private var countBooksPerUser: Long = 0
+    private var lastBookNumber: Long = 0
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,16 +52,18 @@ class AddBookActivity : AppCompatActivity() {
             finish()
         }
 
-        databaseReference.child("books").child(auth.currentUser!!.uid).addListenerForSingleValueEvent(object :
-            ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                countBooksPerUser = dataSnapshot.childrenCount
-            }
+        databaseReference.child("books").child(auth.currentUser!!.uid).orderByKey().limitToLast(1)
+            .addListenerForSingleValueEvent(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (child in snapshot.children) {
+                        lastBookNumber = child.key.toString().toLong()
+                    }
+                }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.e("error", databaseError.message.toString())
-            }
-        })
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("error", "Failed to read last node!")
+                }
+            })
 
         findViewById<Button>(R.id.btn_add).setOnClickListener {
             if(checkAllFields()){
@@ -73,7 +75,7 @@ class AddBookActivity : AppCompatActivity() {
                 val comment = findViewById<EditText>(R.id.comment).text.toString()
                 val bookDB = databaseReference.child("books").child(auth.currentUser!!.uid)
                 val book = Book(bookName, bookAuthor, bookDescription, comment)
-                bookDB.child(countBooksPerUser.toString()).setValue(book).addOnCompleteListener {
+                bookDB.child((lastBookNumber + 1).toString()).setValue(book).addOnCompleteListener {
                     if(it.isSuccessful){
 
                     }else{
@@ -81,8 +83,7 @@ class AddBookActivity : AppCompatActivity() {
                     }
                 }
                 if(imageUri != null) {
-                    storageRef.child("books/" + auth.currentUser!!.uid + "/" + countBooksPerUser).delete()
-                    storageRef.child("books/" + auth.currentUser!!.uid + "/" + countBooksPerUser).putFile(imageUri!!).addOnCompleteListener {
+                    storageRef.child("books/" + auth.currentUser!!.uid + "/" + (lastBookNumber + 1)).putFile(imageUri!!).addOnCompleteListener {
                         if (it.isSuccessful) {
 
                         } else {
