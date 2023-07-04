@@ -4,16 +4,14 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookswap.utils.Book
-import com.example.bookswap.utils.BooksMainAdapter
-import com.example.bookswap.utils.BooksMainViewHolder
+import com.example.bookswap.utils.adapter.BooksMainAdapter
+import com.example.bookswap.utils.adapter.BooksMainViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -70,13 +68,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         findViewById<LinearLayout>(R.id.account_image_layout).setOnClickListener {
-            val intent: Intent = if (auth.currentUser != null) {
-                Intent(this, UserProfileActivity::class.java)
+            if (auth.currentUser != null) {
+                val intent: Intent = Intent(this, UserProfileActivity::class.java)
+                startActivity(intent)
+                finish()
             } else {
-                Intent(this, SignInActivity::class.java)
+                val intent: Intent = Intent(this, SignInActivity::class.java)
+                startActivity(intent)
             }
-            startActivity(intent)
-            finish()
         }
     }
 

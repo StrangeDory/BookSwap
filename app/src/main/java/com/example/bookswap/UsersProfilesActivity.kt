@@ -10,14 +10,17 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookswap.utils.Book
-import com.example.bookswap.utils.BooksProfileViewHolder
+import com.example.bookswap.utils.adapter.BooksProfileViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.firebase.ui.database.SnapshotParser
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -31,6 +34,7 @@ class UsersProfilesActivity : AppCompatActivity() {
 
     var uid: String? = ""
     private val databaseReference = Firebase.database.reference
+    private var auth: FirebaseAuth = Firebase.auth
     private lateinit var recycleView: RecyclerView
     private lateinit var layoutManager: LinearLayoutManager
     private lateinit var firebaseRecyclerAdapter: FirebaseRecyclerAdapter<Book, BooksProfileViewHolder>
@@ -109,8 +113,16 @@ class UsersProfilesActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<CardView>(R.id.cv_icon_chat).setOnClickListener{
-
+        findViewById<ImageButton>(R.id.icon_chat).setOnClickListener{
+            if(auth.currentUser != null) {
+                val intent = Intent(this, ChatActivity::class.java).apply {
+                    putExtra("uid", uid)
+                }
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "You need to sign in to write messages!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

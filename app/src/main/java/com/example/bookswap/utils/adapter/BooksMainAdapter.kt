@@ -1,4 +1,4 @@
-package com.example.bookswap.utils
+package com.example.bookswap.utils.adapter
 
 import android.app.Activity
 import android.util.Log
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookswap.R
+import com.example.bookswap.utils.Book
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener

@@ -1,4 +1,4 @@
-package com.example.bookswap.utils
+package com.example.bookswap.utils.adapter
 
 import android.app.Activity
 import android.content.Intent
@@ -8,7 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookswap.R
-import com.example.bookswap.SignInActivity
 import com.example.bookswap.UserProfileActivity
 import com.example.bookswap.UsersProfilesActivity
 import com.google.firebase.auth.FirebaseAuth

@@ -9,4 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="light_orange">#ED7E5A</color>
     <color name="orange">#F6693B</color>
+    <color name="colorTextBackground">#f5f5f5</color>
+    <color name="colorText">#464646</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorItemLeft">#E6E4E4</color>
+    <color name="colorItemRight">#813fd7</color>
 </resources>

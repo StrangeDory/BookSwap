@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookswap.utils.Book
-import com.example.bookswap.utils.BooksProfileViewHolder
+import com.example.bookswap.utils.adapter.BooksProfileViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.firebase.ui.database.SnapshotParser
@@ -150,6 +150,10 @@ class UserProfileActivity : AppCompatActivity() {
             } finally {
                 popupMenu.show()
             }
+        }
+
+        findViewById<ImageView>(R.id.chats).setOnClickListener {
+
         }
     }
 

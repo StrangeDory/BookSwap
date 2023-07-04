@@ -1,4 +1,4 @@
-package com.example.bookswap.utils
+package com.example.bookswap.utils.adapter
 
 import android.net.Uri
 import android.view.View
