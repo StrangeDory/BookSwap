@@ -68,9 +68,10 @@
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view_books"
+        android:id="@+id/recycler_view_books_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="vertical"
         android:layout_margin="8dp">
 
     </androidx.recyclerview.widget.RecyclerView>
