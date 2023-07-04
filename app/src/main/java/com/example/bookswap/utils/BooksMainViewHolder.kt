@@ -1,16 +1,22 @@
 package com.example.bookswap.utils
 
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.bookswap.R
+import com.example.bookswap.SignInActivity
+import com.example.bookswap.UserProfileActivity
+import com.example.bookswap.UsersProfilesActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.squareup.picasso.Picasso
 
-class BooksMainViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+class BooksMainViewHolder(itemView: View, private val activity: Activity): RecyclerView.ViewHolder(itemView) {
     val userName = itemView.findViewById<TextView>(R.id.user_fullname_main)
     val userIcon = itemView.findViewById<ImageView>(R.id.user_account_image)
     val bookName = itemView.findViewById<TextView>(R.id.tv_title_main)
@@ -18,6 +24,7 @@ class BooksMainViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     val bookDescription = itemView.findViewById<TextView>(R.id.tv_description_main)
     val bookComment = itemView.findViewById<TextView>(R.id.tv_comment_main)
     val imgBook = itemView.findViewById<ImageView>(R.id.rv_main_img_book)
+    private var auth: FirebaseAuth = Firebase.auth
 
     fun setUserName(name: String) {
         userName.text = name
@@ -51,12 +58,28 @@ class BooksMainViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             .into(imgBook)
     }
 
-    fun clickUserProfile(uidCurrent: String) {
+    fun clickUserProfile(uid: String) {
         userName.setOnClickListener{
-
+            val intent: Intent = if (auth.currentUser?.uid != uid) {
+                Intent(activity, UsersProfilesActivity::class.java).apply {
+                    putExtra("uid", uid)
+                }
+            } else {
+                Intent(activity, UserProfileActivity::class.java)
+            }
+            activity.startActivity(intent)
+            activity.finish()
         }
         userIcon.setOnClickListener {
-
+            val intent: Intent = if (auth.currentUser?.uid != uid) {
+                Intent(activity, UsersProfilesActivity::class.java).apply {
+                    putExtra("uid", uid)
+                }
+            } else {
+                Intent(activity, UserProfileActivity::class.java)
+            }
+            activity.startActivity(intent)
+            activity.finish()
         }
     }
 }

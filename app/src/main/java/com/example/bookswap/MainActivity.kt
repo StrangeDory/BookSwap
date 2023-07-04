@@ -15,7 +15,6 @@ import com.example.bookswap.utils.Book
 import com.example.bookswap.utils.BooksMainAdapter
 import com.example.bookswap.utils.BooksMainViewHolder
 import com.firebase.ui.database.FirebaseRecyclerAdapter
-import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -102,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                             bookList.add(book)
                     }
                 }
-                val booksAdapter = BooksMainAdapter(bookList)
+                val booksAdapter = BooksMainAdapter(bookList, this@MainActivity)
                 recycleView.adapter = booksAdapter
             }
 
