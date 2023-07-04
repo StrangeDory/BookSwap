@@ -50,4 +50,13 @@ class BooksMainViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             .load(uri)
             .into(imgBook)
     }
+
+    fun clickUserProfile(uidCurrent: String) {
+        userName.setOnClickListener{
+
+        }
+        userIcon.setOnClickListener {
+
+        }
+    }
 }
