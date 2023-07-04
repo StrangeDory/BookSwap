@@ -117,6 +117,7 @@ class UsersProfilesActivity : AppCompatActivity() {
             if(auth.currentUser != null) {
                 val intent = Intent(this, ChatActivity::class.java).apply {
                     putExtra("uid", uid)
+                    putExtra("isInProfile", "false")
                 }
                 startActivity(intent)
                 finish()

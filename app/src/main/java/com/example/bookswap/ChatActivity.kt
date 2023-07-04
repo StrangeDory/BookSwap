@@ -46,14 +46,21 @@ class ChatActivity : AppCompatActivity() {
 
         val intent = intent
         val uid = intent.getStringExtra("uid")
+        val isInProfile = intent.getStringExtra("isInProfile")
 
 
         findViewById<ImageView>(R.id.imgBack).setOnClickListener {
-            val intent = Intent(this, UsersProfilesActivity::class.java).apply {
-                putExtra("uid", uid)
+            if(isInProfile == "false") {
+                val intent = Intent(this, UsersProfilesActivity::class.java).apply {
+                    putExtra("uid", uid)
+                }
+                startActivity(intent)
+                finish()
+            } else {
+                val intent = Intent(this, UserChatsActivity::class.java)
+                startActivity(intent)
+                finish()
             }
-            startActivity(intent)
-            finish()
         }
 
         firebaseUser = FirebaseAuth.getInstance().currentUser
@@ -89,7 +96,7 @@ class ChatActivity : AppCompatActivity() {
                         .load(uri)
                         .into(findViewById<ImageView>(R.id.imgProfile))
                 }.addOnFailureListener {
-                    findViewById<CircleImageView>(R.id.imgProfile).setImageResource(R.drawable.profile_image)
+                    findViewById<CircleImageView>(R.id.imgProfile).setImageResource(R.drawable.icon_profile2)
                 }
             }
         })

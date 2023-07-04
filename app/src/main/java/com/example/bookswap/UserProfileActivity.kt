@@ -153,7 +153,8 @@ class UserProfileActivity : AppCompatActivity() {
         }
 
         findViewById<ImageView>(R.id.chats).setOnClickListener {
-
+            val intent = Intent(this, UserChatsActivity::class.java)
+            startActivity(intent)
         }
     }
 
