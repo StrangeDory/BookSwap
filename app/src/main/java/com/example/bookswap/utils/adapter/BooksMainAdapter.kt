@@ -1,5 +1,6 @@
 package com.example.bookswap.utils.adapter
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,7 +15,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 
-class BooksMainAdapter(private val bookList: List<Book>, private val activity: Activity) : RecyclerView.Adapter<BooksMainViewHolder>() {
+class BooksMainAdapter(private var bookList: List<Book>, private val activity: Activity) : RecyclerView.Adapter<BooksMainViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BooksMainViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_view_item_books_main, parent, false)
@@ -56,5 +57,11 @@ class BooksMainAdapter(private val bookList: List<Book>, private val activity: A
 
     override fun getItemCount(): Int {
         return bookList.size
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun searchData(searchList: ArrayList<Book>) {
+        bookList = searchList
+        notifyDataSetChanged()
     }
 }

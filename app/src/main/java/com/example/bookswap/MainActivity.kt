@@ -1,11 +1,13 @@
 package com.example.bookswap
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.SearchView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,8 +32,10 @@ class MainActivity : AppCompatActivity() {
     private val databaseReference = Firebase.database.reference
     private lateinit var recycleView: RecyclerView
     private lateinit var layoutManager: LinearLayoutManager
-    private lateinit var firebaseRecyclerAdapter: FirebaseRecyclerAdapter<Book, BooksMainViewHolder>
+    val bookList: MutableList<Book> = mutableListOf()
+    var booksAdapter: BooksMainAdapter = BooksMainAdapter(bookList, this@MainActivity)
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -77,10 +81,22 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
+        findViewById<androidx.appcompat.widget.SearchView>(R.id.search_view_main).setOnQueryTextListener(object : androidx.appcompat.widget.SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    searchList(newText)
+                }
+                return true
+            }
+        })
     }
 
     private fun logRecycleView() {
-        val bookList: MutableList<Book> = mutableListOf()
         databaseReference.child("books").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
 
@@ -100,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                             bookList.add(book)
                     }
                 }
-                val booksAdapter = BooksMainAdapter(bookList, this@MainActivity)
+                booksAdapter = BooksMainAdapter(bookList, this@MainActivity)
                 recycleView.adapter = booksAdapter
             }
 
@@ -109,6 +125,16 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    fun searchList(text: String) {
+        val searchList = ArrayList<Book>()
+        for (item in bookList) {
+            if (item.name.lowercase().contains(text.lowercase()) || item.author.lowercase().contains(text.lowercase())) {
+                searchList.add(item)
+            }
+        }
+        booksAdapter.searchData(searchList)
     }
 
 }
