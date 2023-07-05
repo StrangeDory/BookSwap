@@ -29,6 +29,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.squareup.picasso.Picasso
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -45,6 +46,32 @@ class AddBookActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_book)
+
+        val bookId = intent.getStringExtra("bookId")
+        if(bookId != null) {
+            databaseReference.child("books").child(auth.currentUser!!.uid).child(bookId).addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    findViewById<EditText>(R.id.book_name).setText(snapshot.child("name").value.toString())
+                    findViewById<EditText>(R.id.book_author).setText(snapshot.child("author").value.toString())
+                    findViewById<EditText>(R.id.book_description).setText(snapshot.child("description").value.toString())
+                    findViewById<EditText>(R.id.comment).setText(snapshot.child("comment").value.toString())
+                    val storageRef = Firebase.storage.getReferenceFromUrl("gs://bookswap-d5092.appspot.com")
+                    val imageRef = storageRef.child("books/" + auth.currentUser!!.uid).child(bookId)
+                    imageRef.downloadUrl.addOnSuccessListener { uri ->
+                        Picasso.get()
+                            .load(uri)
+                            .into(findViewById<ImageView>(R.id.img_book))
+                    }.addOnFailureListener { exception ->
+                        Log.e("error", exception.message.toString())
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+        }
 
         findViewById<ImageButton>(R.id.backBtn_add_book).setOnClickListener {
             val intent = Intent(this, UserProfileActivity::class.java)
@@ -75,7 +102,7 @@ class AddBookActivity : AppCompatActivity() {
                 val comment = findViewById<EditText>(R.id.comment).text.toString()
                 val bookDB = databaseReference.child("books").child(auth.currentUser!!.uid)
                 val book = Book(bookName, bookAuthor, bookDescription, comment)
-                bookDB.child((lastBookNumber + 1).toString()).setValue(book).addOnCompleteListener {
+                bookDB.child(((bookId ?: (lastBookNumber + 1))).toString()).setValue(book).addOnCompleteListener {
                     if(it.isSuccessful){
 
                     }else{
@@ -83,7 +110,9 @@ class AddBookActivity : AppCompatActivity() {
                     }
                 }
                 if(imageUri != null) {
-                    storageRef.child("books/" + auth.currentUser!!.uid + "/" + (lastBookNumber + 1)).putFile(imageUri!!).addOnCompleteListener {
+                    storageRef.child(
+                        "books/" + auth.currentUser!!.uid + "/" + (bookId ?: (lastBookNumber + 1))
+                    ).putFile(imageUri!!).addOnCompleteListener {
                         if (it.isSuccessful) {
 
                         } else {

@@ -2,6 +2,7 @@ package com.example.bookswap.utils.adapter
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.content.Intent.getIntent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -13,6 +14,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.bookswap.AddBookActivity
 import com.example.bookswap.R
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -86,6 +88,14 @@ class BooksProfileViewHolder(itemView: View, private val activity: Activity): Re
 
             }
             dialog.show()
+        }
+
+        itemView.findViewById<ImageView>(R.id.edit_record).setOnClickListener{
+            val intent = Intent(activity, AddBookActivity::class.java).apply {
+                putExtra("bookId", idBook)
+            }
+            activity.startActivity(intent)
+            activity.finish()
         }
     }
 }
