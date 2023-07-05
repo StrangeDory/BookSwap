@@ -1,15 +1,16 @@
 package com.example.bookswap
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.view.Window
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -178,7 +179,7 @@ class UserProfileActivity : AppCompatActivity() {
             ): BooksProfileViewHolder {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.recycle_view_item_books_in_profile, parent, false)
-                return BooksProfileViewHolder(view)
+                return BooksProfileViewHolder(view, this@UserProfileActivity)
             }
 
             override fun onBindViewHolder(
@@ -197,6 +198,7 @@ class UserProfileActivity : AppCompatActivity() {
                 }.addOnFailureListener { exception ->
                     Log.e("error", exception.message.toString())
                 }
+                holder.setClickListener(auth.currentUser!!.uid, model.id)
             }
 
         }

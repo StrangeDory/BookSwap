@@ -147,7 +147,7 @@ class UsersProfilesActivity : AppCompatActivity() {
             ): BooksProfileViewHolder {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.recycler_view_item_books, parent, false)
-                return BooksProfileViewHolder(view)
+                return BooksProfileViewHolder(view, this@UsersProfilesActivity)
             }
 
             override fun onBindViewHolder(
